@@ -161,6 +161,9 @@ Singleton {
                 // use the Quickshell lock screen for `qs ipc call lock lock`
                 property bool enabled: false
                 property string pamConfig: "hyprlock"
+                // fingerprint reader alongside the password (needs pam_fprintd
+                // in the pam config — machine-specific, so off in the repo)
+                property bool fingerprint: false
             }
 
             property JsonObject polkit: JsonObject {

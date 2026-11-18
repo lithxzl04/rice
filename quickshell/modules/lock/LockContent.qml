@@ -38,16 +38,21 @@ Item {
         error = "";
         // Finger and password run as separate PAM conversations so that
         // the fingerprint wait never blocks the password path.
-        pamFinger.abort();
+        if (fingerOn)
+            pamFinger.abort();
         pamPassword.start();
     }
+
+    // fingerprint is opt-in (lock.fingerprint): the repo version ships
+    // password-only, machines with a reader flip it in their local config
+    readonly property bool fingerOn: Config.lock.fingerprint && !root.preview
 
     PamContext {
         id: pamFinger
         config: Config.lock.pamConfig
         // Start the conversation right away so pam_fprintd polls the
         // fingerprint sensor while the password field is still empty.
-        Component.onCompleted: if (!root.preview)
+        Component.onCompleted: if (root.fingerOn)
             start()
         onPamMessage: {}
         onCompleted: result => {
@@ -59,7 +64,7 @@ Item {
                 // the PAM conversation only ends here if fprintd itself gave
                 // up (24 h timeout, reader error) — restart immediately so
                 // the print is accepted for as long as the lock screen exists
-                if (!root.preview && !root.busy)
+                if (root.fingerOn && !root.busy)
                     pamFinger.start();
             }
         }
@@ -70,7 +75,7 @@ Item {
     Timer {
         id: rearmTimer
         interval: 1000
-        onTriggered: if (!root.preview && !root.busy)
+        onTriggered: if (root.fingerOn && !root.busy)
             pamFinger.start()
     }
 
@@ -90,14 +95,16 @@ Item {
                 root.error = "Wrong password";
                 pw.text = "";
                 shake.restart();
-                pamFinger.start();
+                if (root.fingerOn)
+                    pamFinger.start();
             }
         }
         onError: err => {
             root.busy = false;
             root.error = "Authentication error";
             shake.restart();
-            pamFinger.start();
+            if (root.fingerOn)
+                pamFinger.start();
         }
     }
 
