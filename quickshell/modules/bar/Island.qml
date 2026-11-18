@@ -639,8 +639,6 @@ Item {
                     Panels.toggle("sidebar");
                 else if (root.mode === "notif")
                     Panels.show("sidebar");
-                else if (root.mode === "idle")
-                    Chrono.show("");
                 else if (Panels.dashboard)
                     Panels.dashboard = false;
                 else

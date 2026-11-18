@@ -7,3 +7,4 @@ x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/ror2mm=r2modman.desktop
 
 [Added Associations]
+image/jpeg=firefox.desktop;
