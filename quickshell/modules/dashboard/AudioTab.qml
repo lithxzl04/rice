@@ -115,16 +115,6 @@ Item {
                             text: "Output"
                             accent: Theme.primary
                         }
-                        Txt {
-                            text: "EasyEffects"
-                            font.pixelSize: 12
-                            color: Theme.fgDim
-                        }
-                        StyledSwitch {
-                            checked: Toggles.easyEffects
-                            accent: Theme.primary
-                            onToggled: Toggles.toggleEasyEffects()
-                        }
                     }
                     StyledSlider {
                         Layout.fillWidth: true

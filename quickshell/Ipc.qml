@@ -47,9 +47,9 @@ Scope {
         function toggle(): void {
             Panels.toggle("dashboard");
         }
-        // home media system screentime network audio settings
+        // home system screentime network audio settings
         function tab(name: string): void {
-            const tabs = ["home", "media", "system", "screentime", "network", "audio", "settings"];
+            const tabs = ["home", "system", "screentime", "network", "audio", "settings"]; // matches Dashboard.qml (Media tab was removed)
             const i = tabs.indexOf(name);
             Panels.openDashboard(i < 0 ? 0 : i);
         }

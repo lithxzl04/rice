@@ -119,12 +119,17 @@ PanelWindow {
             id: right
             anchors.right: parent.right
             height: parent.height
-            width: rightRow.implicitWidth + 20
+            // capped like the left pill so it never runs under the island on narrow screens
+            width: Math.min(rightRow.implicitWidth + 20, content.width / 2 - island.width / 2 - 14)
+            clip: true
             phase: 0.5
 
             RowLayout {
                 id: rightRow
-                anchors.centerIn: parent
+                // right-anchored: if the pill is capped, the stats clip, not the power button
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
                 spacing: 10
 
                 Stats {

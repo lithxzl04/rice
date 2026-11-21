@@ -57,13 +57,6 @@ ColumnLayout {
                 font.weight: Font.Thin
                 font.family: Theme.display
             }
-            Txt {
-                anchors.right: parent.right
-                visible: Weather.ready
-                text: Weather.tempText + " · " + Weather.desc
-                font.pixelSize: 11
-                color: Theme.fgDim
-            }
         }
     }
 

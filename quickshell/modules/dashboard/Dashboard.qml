@@ -95,6 +95,30 @@ Overlay {
             opacity: Math.min(1, win.progress * 1.6)
             transform: Translate { y: (1 - win.progress) * -40 }
 
+            // lith: cards inside the dashboard read this (Card.qml walks its parents),
+            // so the background image shows through; cards elsewhere keep 0.9
+            readonly property real cardAlpha: 0.55
+
+            // ---- background image (dashboard only) + scrim for text contrast ----
+            // shortcut: fixed path; move to config.json if it should be switchable
+            ClippingRectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: "transparent"
+                Image {
+                    anchors.fill: parent
+                    source: "file://" + Quickshell.env("HOME") + "/Pictures/wallpapers/ferris-wheel.jpg"
+                    fillMode: Image.PreserveAspectCrop
+                    sourceSize.width: 1300 // decode near panel size, not the full 2000px
+                    asynchronous: true
+                    cache: true
+                }
+                Rectangle {
+                    anchors.fill: parent
+                    color: Qt.rgba(0.03, 0.04, 0.08, 0.45)
+                }
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onWheel: wheel => wheel.accepted = false
@@ -110,7 +134,7 @@ Overlay {
                     Layout.fillHeight: true
                     Layout.preferredWidth: 86
                     radius: Theme.r.lg
-                    color: Theme.alpha(Theme.surfaceContainer, 0.8)
+                    color: Theme.alpha(Theme.surfaceContainer, 0.5)
 
                     Rectangle {
                         id: railIndicator

@@ -16,7 +16,7 @@ Singleton {
     }
 
     readonly property var list: [
-        { name: "Dashboard", desc: "Overview, media, weather, stats", icon: "view_dashboard", kw: "home control center", run: () => Panels.openDashboard("Home") },
+        { name: "Dashboard", desc: "Overview, media, stats", icon: "view_dashboard", kw: "home control center", run: () => Panels.openDashboard("Home") },
         { name: "System Monitor", desc: "CPU, memory, GPU, network", icon: "chart_areaspline", kw: "cpu ram gpu stats htop", run: () => Panels.openDashboard("System") },
         { name: "Screen Time", desc: "Today's usage from your tracker", icon: "timer_outline", kw: "usage hours apps", run: () => Panels.openDashboard("Screen") },
         { name: "Wi-Fi & Bluetooth", desc: "Networks and devices", icon: "wifi", kw: "network bluetooth connect", run: () => Panels.openDashboard("Network") },
@@ -35,7 +35,6 @@ Singleton {
         { name: "Keybind Cheatsheet", desc: "Every Hyprland bind", icon: "keyboard", kw: "shortcuts keys help", run: () => Panels.show("cheatsheet") },
         { name: "Focus Timer", desc: "Pomodoro: " + Config.focus.workMinutes + " min focus sessions", icon: "timer_outline", kw: "pomodoro study focus", run: () => Focus.toggle() },
         { name: "Window Switcher", desc: "All windows with live previews", icon: "dock_window", kw: "alt tab switch windows", run: () => Panels.show("switcher") },
-        { name: "EasyEffects", desc: "Start in background / quit completely", icon: "tune_variant", kw: "audio equalizer effects easyeffects", run: () => Toggles.toggleEasyEffects() },
         { name: "Caffeine", desc: "Keep the screen awake", icon: "coffee", kw: "always on idle inhibit", run: () => Toggles.toggleCaffeine() },
         { name: "Do Not Disturb", desc: "Silence notification popups", icon: "bell_sleep", kw: "dnd quiet", run: () => { Notifs.dnd = !Notifs.dnd; } },
         { name: "Notes", desc: "Toggle the scratchpad in a floating window", icon: "notebook", kw: "notes scratchpad todo", run: () => Toggles.toggleNotes() },

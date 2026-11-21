@@ -5,6 +5,7 @@ import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
 import qs.common
+import qs.services // Panels (hot corner -> overview); missing upstream
 
 // Rounded screen corners (click-through) and the top-left hot corner, per
 // monitor. The corners live in two thin strips (top and

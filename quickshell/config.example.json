@@ -1,0 +1,102 @@
+{
+    "apps": {
+        "browser": "librewolf",
+        "editor": "code",
+        "files": "nautilus",
+        "searchUrl": "https://www.google.com/search?q=",
+        "terminal": "kitty"
+    },
+    "bar": {
+        "height": 42,
+        "margin": 8,
+        "opacity": 0.96,
+        "showStats": false,
+        "showTitle": false,
+        "specials": [
+            "minimize",
+            "magic"
+        ],
+        "workspaceIcons": true,
+        "workspaces": 5
+    },
+    "battery": {
+        "critical": 8,
+        "warn": 20
+    },
+    "breaks": {
+        "everyMinutes": 20,
+        "eyeReminder": false
+    },
+    "controlsLayout": {
+        "order": [
+            "toggles",
+            "sliders",
+            "media"
+        ]
+    },
+    "drawers": {
+        "hoverOpen": true,
+        "left": false,
+        "right": true
+    },
+    "focus": {
+        "breakMinutes": 5,
+        "longBreakMinutes": 15,
+        "silence": true,
+        "workMinutes": 25
+    },
+    "fx": {
+        "ambient": false,
+        "ambientOnBattery": false,
+        "cornerRadius": 18,
+        "corners": true,
+        "hotCorner": true
+    },
+    "homeLayout": {
+        "left": [
+            "sliders",
+            "media"
+        ],
+        "mid": [
+            "toggles"
+        ],
+        "right": [
+            "ministats",
+            "battery",
+            "notes"
+        ]
+    },
+    "idle": {
+        "dimAfter": 180,
+        "dimTo": 10,
+        "enabled": true,
+        "lockAfter": 240,
+        "lockBeforeSleep": true,
+        "mediaKeepsAwake": true,
+        "screenOffAfter": 300,
+        "suspendAfter": 0
+    },
+    "lock": {
+        "enabled": true,
+        "fingerprint": false,
+        "pamConfig": "hyprlock"
+    },
+    "notifications": {
+        "server": true,
+        "timeout": 5000
+    },
+    "polkit": {
+        "enabled": true
+    },
+    "toggles": {
+        "warm": false,
+        "warmTemp": 4000
+    },
+    "wallpaper": {
+        "matugenIndex": 0,
+        "mode": "dark",
+        "nameFile": "",
+        "scheme": "scheme-vibrant",
+        "transition": "random"
+    }
+}

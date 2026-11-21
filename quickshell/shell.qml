@@ -78,7 +78,6 @@ ShellRoot {
 
     // start services that nothing on screen touches right away
     Component.onCompleted: {
-        Weather.ready;
         ScreenTime.available;
         Keybinds.sections;
         Emojis.all;

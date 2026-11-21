@@ -17,10 +17,5 @@ hl.on("hyprland.start", function()
     -- process name instead, then grep picks the text/image watcher apart
     hl.exec_cmd("pgrep -ax wl-paste | grep -F -- '--type text' >/dev/null || wl-paste --type text --watch cliphist store")
     hl.exec_cmd("pgrep -ax wl-paste | grep -F -- '--type image' >/dev/null || wl-paste --type image --watch cliphist store")
-    hl.exec_cmd("throne", { workspace = "special:magic silent" })
-    hl.exec_cmd("Telegram", { workspace = "3 silent" })
-    hl.exec_cmd("firefox", { workspace = "1" })
-    -- touchpad swipe -> mouse4/5 (self-deduping: exits if already running)
-    hl.exec_cmd("libinput-gestures")
     
 end)

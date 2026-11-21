@@ -7,7 +7,7 @@ import qs.common
 import qs.services
 import qs.widgets
 
-// Indicators, network, bluetooth, volume, battery, notifications, clock, power.
+// Indicators, network, bluetooth, volume, battery, notifications, power (clock lives in the island).
 RowLayout {
     id: root
 
@@ -147,7 +147,7 @@ RowLayout {
         icon: BT.icon
         size: 30
         iconSize: 16
-        iconColor: BT.connected.length > 0 ? Theme.accent(6) : BT.enabled ? Theme.fg : Theme.fgDim
+        iconColor: BT.connected.length > 0 ? Theme.primary : BT.enabled ? Theme.fg : Theme.fgDim
         tooltip: "Bluetooth · " + BT.summary
         onClicked: mouse => mouse.button === Qt.RightButton ? BT.toggle() : Panels.openDashboard("Network")
     }
@@ -317,53 +317,6 @@ RowLayout {
             NumberAnimation { target: bell; property: "rotation"; to: -16; duration: 110 }
             NumberAnimation { target: bell; property: "rotation"; to: 10; duration: 110 }
             NumberAnimation { target: bell; property: "rotation"; to: 0; duration: 260; easing.type: Easing.OutBack }
-        }
-    }
-
-    // ---- clock ----
-    Item {
-        implicitWidth: clockCol.implicitWidth + 16
-        implicitHeight: 34
-        Rectangle {
-            anchors.fill: parent
-            radius: 12
-            color: Theme.alpha(Theme.primary, clockHover.hovered ? 0.16 : 0)
-            Behavior on color { ColAnim {} }
-        }
-        Column {
-            id: clockCol
-            anchors.centerIn: parent
-            spacing: -2
-            Txt {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatTime(sysClock.date, "HH:mm")
-                font.pixelSize: 15
-                font.weight: Font.Black
-                font.family: Theme.display
-                color: Theme.fg
-            }
-            Txt {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatDate(sysClock.date, "ddd d")
-                font.pixelSize: 9
-                font.weight: Font.Bold
-                color: Theme.accent(2)
-            }
-        }
-        HoverHandler {
-            id: clockHover
-            cursorShape: Qt.PointingHandCursor
-        }
-        TapHandler {
-            onTapped: Panels.toggle("sidebar")
-        }
-        Tip {
-            text: Qt.formatDate(sysClock.date, "dddd, d MMMM yyyy")
-            show: clockHover.hovered
-        }
-        SystemClock {
-            id: sysClock
-            precision: SystemClock.Minutes
         }
     }
 

@@ -161,7 +161,7 @@ Item {
             }
         }
 
-        // ---------------- idle: clock + weather ----------------
+        // ---------------- idle: clock + date ----------------
         Layer {
             id: idleLayer
             shown: root.mode === "idle"
@@ -187,19 +187,6 @@ Item {
                     font.pixelSize: 12
                     font.weight: Font.Medium
                     color: Theme.fgDim
-                }
-                Icon {
-                    visible: Weather.ready
-                    icon: Weather.icon
-                    size: 15
-                    color: Weather.tint
-                }
-                Txt {
-                    visible: Weather.ready
-                    text: Weather.tempText
-                    font.pixelSize: 12
-                    font.weight: Font.Bold
-                    color: Theme.fg
                 }
             }
         }

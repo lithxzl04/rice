@@ -3,15 +3,20 @@
 # >>> prism >>>
 # Prism — added by install.sh (rerun it or use --uninstall to change this block)
 [templates.prism]
-input_path = '/home/chick/.config/quickshell/matugen/prism-colors.lua'
-output_path = '/home/chick/.config/quickshell/.state/colors.lua'
+input_path = '/home/lith/.config/quickshell/matugen/prism-colors.lua'
+output_path = '/home/lith/.config/quickshell/.state/colors.lua'
 post_hook = 'hyprctl reload >/dev/null 2>&1 || true'
 
 [templates.prism-gtk-3]
-input_path = '/home/chick/.config/quickshell/matugen/gtk-colors.css'
-output_path = '/home/chick/.config/gtk-3.0/colors.css'
+input_path = '/home/lith/.config/quickshell/matugen/gtk-colors.css'
+output_path = '/home/lith/.config/gtk-3.0/colors.css'
 
 [templates.prism-gtk-4]
-input_path = '/home/chick/.config/quickshell/matugen/gtk-colors.css'
-output_path = '/home/chick/.config/gtk-4.0/colors.css'
+input_path = '/home/lith/.config/quickshell/matugen/gtk-colors.css'
+output_path = '/home/lith/.config/gtk-4.0/colors.css'
+[templates.prism-kitty]
+input_path = '/home/lith/.config/quickshell/matugen/kitty-colors.conf'
+output_path = '/home/lith/.config/kitty-colors.conf'
+post_hook = 'pkill -USR1 -x kitty || true'
+
 # <<< prism <<<

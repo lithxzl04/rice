@@ -258,7 +258,7 @@ Item {
         }
     }
 
-    // ---- bottom strip: battery, weather, media ----
+    // ---- bottom strip: battery, media ----
     RowLayout {
         anchors.left: parent.left
         anchors.right: parent.right
@@ -275,16 +275,6 @@ Item {
             }
             Txt {
                 text: Power.percent + "%"
-                color: "white"
-            }
-            Icon {
-                visible: Weather.ready
-                icon: Weather.icon
-                color: Weather.tint
-            }
-            Txt {
-                visible: Weather.ready
-                text: Weather.tempText + " " + Weather.desc
                 color: "white"
             }
         }

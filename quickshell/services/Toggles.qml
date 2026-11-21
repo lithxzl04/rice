@@ -128,7 +128,9 @@ Singleton {
         onExited: code => {
             root.recording = false;
             Panels.capturing = false;
-            if (root.recordFile !== "")
+            // non-zero = cancelled slurp (Esc) or wf-recorder failed: no file was written.
+            // A normal stop (SIGINT) exits 0.
+            if (code === 0 && root.recordFile !== "")
                 Notifs.local("Recording saved", root.recordFile, "video", 1, "", [{ text: "Open folder", run: () => Quickshell.execDetached(["xdg-open", Config.paths.recordings]) }, { text: "Play", run: () => Quickshell.execDetached(["xdg-open", root.recordFile]) }]);
         }
     }

@@ -459,56 +459,6 @@ Item {
                         accentIndex: 6
                         onToggled: v => Config.polkit.enabled = v
                     }
-                    // weather location (wttr.in); empty = guess from IP
-                    RowLayout {
-                        Layout.fillWidth: true
-                        spacing: 12
-                        Rectangle {
-                            implicitWidth: 34
-                            implicitHeight: 34
-                            radius: 11
-                            color: Theme.alpha(Theme.primary, 0.16)
-                            Icon {
-                                anchors.centerIn: parent
-                                icon: "map_marker"
-                                size: 17
-                                color: Theme.primary
-                            }
-                        }
-                        InputField {
-                            id: locField
-                            Layout.fillWidth: true
-                            implicitHeight: 38
-                            icon: ""
-                            fontSize: 13
-                            accent: Theme.accent(1)
-                            placeholder: "Weather location, e.g. Bhopal (empty = auto)"
-                            text: Config.weather.location
-                            onAccepted: {
-                                Config.weather.location = locField.text.trim();
-                                Weather.refresh();
-                            }
-                        }
-                        Btn {
-                            text: "Set"
-                            accent: Theme.accent(1)
-                            implicitHeight: 34
-                            onClicked: {
-                                Config.weather.location = locField.text.trim();
-                                Weather.refresh();
-                            }
-                        }
-                    }
-                    SettingRow {
-                        icon: "temperature_fahrenheit"
-                        title: "Fahrenheit"
-                        checked: Config.weather.fahrenheit
-                        accentIndex: 7
-                        onToggled: v => {
-                            Config.weather.fahrenheit = v;
-                            Weather.refresh();
-                        }
-                    }
                     SectionTitle {
                         icon: "lightning_bolt"
                         text: "Actions"

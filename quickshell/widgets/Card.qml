@@ -9,8 +9,18 @@ Rectangle {
     property bool animateIn: true
     property bool shown: true
 
+    // nearest ancestor's `cardAlpha` wins (the dashboard sets one so its background
+    // image shows through); everywhere else, including the drawer's copies of
+    // shared cards, stays at the original 0.9
+    readonly property real glassAlpha: {
+        for (let p = parent; p; p = p.parent)
+            if (p.cardAlpha !== undefined)
+                return p.cardAlpha;
+        return 0.9;
+    }
+
     radius: Theme.r.lg
-    gradient: TintGradient { base: Theme.surfaceContainer; alpha: 0.9; amount: 0.1; orientation: Gradient.Vertical }
+    gradient: TintGradient { base: Theme.surfaceContainer; alpha: root.glassAlpha; amount: 0.1; orientation: Gradient.Vertical }
     border.width: 1
     border.color: Theme.alpha(Theme.outlineVariant, 0.6)
 

@@ -76,7 +76,10 @@ Singleton {
         objects: [root.sink, root.source].concat(root.sinks ?? []).concat(root.sources ?? []).concat(root.streams ?? []).filter(o => !!o)
     }
 
-    readonly property string icon: muted ? "volume_off" : volume > 0.66 ? "volume_high" : volume > 0.33 ? "volume_medium" : volume > 0 ? "volume_low" : "volume_mute"
+    readonly property string icon: volumeIcon(muted, volume)
+    function volumeIcon(m, v) {
+        return m ? "volume_off" : v > 0.66 ? "volume_high" : v > 0.33 ? "volume_medium" : v > 0 ? "volume_low" : "volume_mute";
+    }
     readonly property string micIcon: micMuted ? "microphone_off" : "microphone"
 
     function setVolume(v) {
@@ -152,16 +155,21 @@ Singleton {
     Connections {
         target: root.sink?.audio ?? null
         function onVolumeChanged() {
-            Osd.show("volume", root.icon, "Volume", root.volume);
+            const a = root.sink.audio;
+            Osd.show("volume", root.volumeIcon(a.muted, a.volume), "Volume", a.volume);
         }
+        // read the emitter, not root.muted/root.icon: those bindings may not have
+        // re-evaluated yet when this handler runs, which showed the old (inverted) state
         function onMutedChanged() {
-            Osd.show("volume", root.icon, root.muted ? "Muted" : "Volume", root.muted ? 0 : root.volume);
+            const m = root.sink.audio.muted;
+            Osd.show("volume", root.volumeIcon(m, root.sink.audio.volume), m ? "Muted" : "Volume", m ? 0 : root.sink.audio.volume);
         }
     }
     Connections {
         target: root.source?.audio ?? null
         function onMutedChanged() {
-            Osd.show("mic", root.micIcon, root.micMuted ? "Microphone muted" : "Microphone on", -1);
+            const m = root.source.audio.muted;
+            Osd.show("mic", m ? "microphone_off" : "microphone", m ? "Microphone muted" : "Microphone on", -1);
         }
     }
 }

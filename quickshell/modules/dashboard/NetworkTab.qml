@@ -206,7 +206,7 @@ Item {
                         Layout.fillWidth: true
                         icon: BT.icon
                         text: "Bluetooth"
-                        accent: Theme.accent(6)
+                        accent: Theme.primary
                     }
                     Txt {
                         visible: BT.discovering
@@ -222,7 +222,7 @@ Item {
                     }
                     StyledSwitch {
                         checked: BT.enabled
-                        accent: Theme.accent(6)
+                        accent: Theme.primary
                         onToggled: BT.toggle()
                     }
                 }
@@ -252,7 +252,7 @@ Item {
                             Icon {
                                 icon: BT.deviceIcon(dev.modelData)
                                 size: 20
-                                color: dev.modelData.connected ? Theme.accent(6) : Theme.fg
+                                color: dev.modelData.connected ? Theme.primary : Theme.fg
                             }
                             ColumnLayout {
                                 Layout.fillWidth: true
@@ -280,7 +280,7 @@ Item {
                             Btn {
                                 text: dev.modelData.connected ? "Disconnect" : dev.modelData.paired ? "Connect" : "Pair"
                                 filled: !dev.modelData.connected
-                                accent: Theme.accent(6)
+                                accent: Theme.primary
                                 implicitHeight: 28
                                 fontSize: 11
                                 onClicked: BT.act(dev.modelData)

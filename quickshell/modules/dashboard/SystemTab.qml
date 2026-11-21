@@ -6,7 +6,7 @@ import qs.common
 import qs.services
 import qs.widgets
 
-// Live system monitor. GPU stats only poll when you ask (wakes the dGPU).
+// Live system monitor (no GPU card: Intel iGPU, nvidia-smi not used).
 Item {
     id: root
 
@@ -154,7 +154,6 @@ Item {
             rows: [
                 { k: "CPU package", v: Math.round(SysStats.cpuTemp) + " °C" },
                 { k: "SSD (NVMe)", v: SysStats.nvmeTemp > 0 ? Math.round(SysStats.nvmeTemp) + " °C" : "—" },
-                { k: "GPU", v: SysStats.gpuWanted && SysStats.gpuTemp > 0 ? Math.round(SysStats.gpuTemp) + " °C" : "switch GPU on" },
                 { k: "Power profile", v: Power.profileName },
                 { k: "Peak (last 90 s)", v: Math.round(Math.max(0, ...SysStats.tempHistory) * 100) + " °C" }
             ]
@@ -210,6 +209,7 @@ Item {
         Card {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.columnSpan: 2 // takes the slot the NVIDIA GPU card had
             shown: root.active
             delay: 150
             ColumnLayout {
@@ -274,102 +274,6 @@ Item {
                         color: Theme.accent(8)
                         fillArea: false
                     }
-                }
-            }
-        }
-
-        // GPU (on demand)
-        Card {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            shown: root.active
-            delay: 180
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 14
-                spacing: 6
-                RowLayout {
-                    SectionTitle {
-                        Layout.fillWidth: true
-                        icon: "expansion_card"
-                        text: "GPU"
-                        accent: Theme.accent(7)
-                    }
-                    StyledSwitch {
-                        checked: SysStats.gpuWanted
-                        accent: Theme.accent(7)
-                        onToggled: v => SysStats.gpuWanted = v
-                    }
-                }
-                Txt {
-                    Layout.fillWidth: true
-                    visible: !SysStats.gpuWanted
-                    wrapMode: Text.Wrap
-                    text: "Polling nvidia-smi keeps the NVIDIA GPU awake, so it's off until you flip the switch."
-                    font.pixelSize: 11
-                    color: Theme.fgDim
-                }
-                Txt {
-                    visible: SysStats.gpuWanted
-                    Layout.fillWidth: true
-                    text: SysStats.gpuName || "Waking the GPU…"
-                    font.pixelSize: 11
-                    font.weight: Font.Bold
-                    color: Theme.primary
-                }
-                InfoRows {
-                    visible: SysStats.gpuWanted
-                    Layout.fillWidth: true
-                    rows: [
-                        { k: "Usage", v: Math.round(SysStats.gpu * 100) + "%  ·  " + SysStats.gpuPstate },
-                        { k: "Temperature", v: Math.round(SysStats.gpuTemp) + " °C" },
-                        { k: "Power draw", v: SysStats.gpuPower.toFixed(1) + " / " + SysStats.gpuPowerLimit.toFixed(0) + " W" },
-                        { k: "VRAM", v: Utils.bytes(SysStats.gpuMemUsed) + " / " + Utils.bytes(SysStats.gpuMemTotal) },
-                        { k: "Clocks", v: SysStats.gpuClock + " / " + SysStats.gpuMemClock + " MHz" },
-                        { k: "Fan", v: SysStats.gpuFan }
-                    ]
-                }
-                Txt {
-                    visible: SysStats.gpuWanted
-                    Layout.topMargin: 4
-                    text: "Top GPU processes"
-                    font.pixelSize: 11
-                    font.weight: Font.Bold
-                    color: Theme.fgDim
-                }
-                Repeater {
-                    model: SysStats.gpuWanted ? SysStats.gpuProcs : []
-                    RowLayout {
-                        id: gp
-                        required property var modelData
-                        Layout.fillWidth: true
-                        Txt {
-                            Layout.fillWidth: true
-                            text: gp.modelData.name + "  (" + (gp.modelData.type === "G" ? "graphics" : gp.modelData.type === "C" ? "compute" : gp.modelData.type) + ")"
-                            font.pixelSize: 11
-                            font.family: Theme.mono
-                        }
-                        Txt {
-                            text: gp.modelData.sm + "% · mem " + gp.modelData.mem + "%"
-                            font.pixelSize: 11
-                            font.family: Theme.mono
-                            color: Theme.fgDim
-                        }
-                    }
-                }
-                Txt {
-                    visible: SysStats.gpuWanted && SysStats.gpuProcs.length === 0
-                    text: "nothing is using the GPU"
-                    font.pixelSize: 11
-                    color: Theme.fgDim
-                }
-                Item {
-                    visible: SysStats.gpuWanted
-                    Layout.fillHeight: true
-                }
-                Item {
-                    visible: !SysStats.gpuWanted
-                    Layout.fillHeight: true
                 }
             }
         }

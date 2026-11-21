@@ -206,20 +206,20 @@ Singleton {
 
             property JsonObject homeLayout: JsonObject {
                 // dashboard Home tab: which widget sits in which column, top to
-                // bottom. Keys: toggles | sliders | media | screentime | weather
+                // bottom. Keys: toggles | sliders | media | screentime
                 // | ministats | calendar | battery | timers | notifs |
                 // workspaces | notes. A key missing from every column is
                 // hidden (edit mode: ✕ removes, the tray brings back)
                 property list<string> left: ["toggles", "sliders"]
                 property list<string> mid: ["media", "screentime"]
-                property list<string> right: ["weather", "ministats"]
+                property list<string> right: ["ministats"]
             }
 
             property JsonObject controlsLayout: JsonObject {
                 // left drawer: widget order, top to bottom. Keys: sliders |
-                // toggles | media | sysrings | weather. A key missing from the
+                // toggles | media | sysrings. A key missing from the
                 // order is hidden (edit mode: ✕ removes, the tray brings back)
-                property list<string> order: ["sliders", "toggles", "media", "sysrings", "weather"]
+                property list<string> order: ["sliders", "toggles", "media", "sysrings"]
             }
         }
     }

@@ -44,7 +44,6 @@ Overlay {
         { p: "c ", mode: "calc", name: "Calculator", glyph: "calculator", hint: "Maths — Enter copies the result", accent: 8 },
         { p: "y ", mode: "youtube", name: "YouTube", glyph: "youtube", hint: "Search YouTube", accent: 0 },
         { p: "a ", mode: "anime", name: "Anime", glyph: "television_play", hint: "Watch with ani-cli", accent: 7 },
-        { p: "q ", mode: "ask", name: "AI", glyph: "star_four_points", hint: "Ask the local model · Enter sends · Enter copies · Shift+Enter stops", accent: 8 },
         { p: "w ", mode: "wallpaper", name: "Wallpapers", glyph: "palette", hint: "Open the wallpaper picker", accent: 9 },
         { p: "?", mode: "help", name: "Help", glyph: "help_circle_outline", hint: "All prefixes", accent: 2 }
     ]

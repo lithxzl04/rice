@@ -38,19 +38,18 @@ Item {
 
     // ---- widget registry ----------------------------------------------------
     // h = fixed px height (the drawer scrolls, nothing stretches). A key
-    // missing from Config.controlsLayout.order is hidden (✕ / tray); media and
-    // weather also hide themselves while there is nothing to show
+    // missing from Config.controlsLayout.order is hidden (✕ / tray);
+    // media also hides itself while there is nothing to show
     readonly property var widgets: ({
         sliders: { file: Qt.resolvedUrl("../dashboard/SlidersCard.qml"), h: 162, delay: 0, icon: "tune_variant", label: "Sliders" },
         toggles: { file: Qt.resolvedUrl("DrawerToggles.qml"), h: 320, delay: 0, icon: "cog", label: "Toggles" },
         media: { file: Qt.resolvedUrl("../dashboard/MediaCard.qml"), h: 180, delay: 80, icon: "music", label: "Player", hidden: !Media.hasPlayer },
         sysrings: { file: Qt.resolvedUrl("DrawerRings.qml"), h: 96, delay: 120, icon: "chart_areaspline", label: "System" },
-        weather: { file: Qt.resolvedUrl("DrawerWeather.qml"), h: 64, delay: 160, icon: "weather_sunny", label: "Weather", hidden: !Weather.ready }
     })
-    readonly property var allKeys: ["sliders", "toggles", "media", "sysrings", "weather"]
+    readonly property var allKeys: ["sliders", "toggles", "media", "sysrings"]
 
     readonly property int gap: 14
-    readonly property var defaultOrder: ["sliders", "toggles", "media", "sysrings", "weather"]
+    readonly property var defaultOrder: ["sliders", "toggles", "media", "sysrings"]
 
     // order from the config, sanitized: unknown keys dropped, duplicates removed
     readonly property var order: {
@@ -206,38 +205,6 @@ Item {
                     color: Theme.fgDim
                 }
             }
-            // pacman updates: icon + pending count
-            Item {
-                implicitWidth: 34
-                implicitHeight: 34
-                IconBtn {
-                    anchors.fill: parent
-                    icon: "pac_man"
-                    size: 34
-                    iconColor: Updates.hasUpdates ? Theme.accent(2) : Theme.fgDim
-                    tooltip: Updates.tooltip + " (click to refresh)"
-                    onClicked: Updates.refresh()
-                }
-                Rectangle {
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.rightMargin: -3
-                    anchors.topMargin: -3
-                    width: Math.max(16, updCount.implicitWidth + 8)
-                    height: 16
-                    radius: 8
-                    color: Updates.hasUpdates ? Theme.accent(2) : Theme.alpha(Theme.fg, 0.18)
-                    Txt {
-                        id: updCount
-                        anchors.centerIn: parent
-                        text: Updates.count > 99 ? "99+" : Updates.count
-                        font.pixelSize: 9
-                        font.weight: Font.Black
-                        font.family: Theme.mono
-                        color: Updates.hasUpdates ? Theme.on(Theme.accent(2)) : Theme.fgDim
-                    }
-                }
-            }
             IconBtn {
                 icon: "code_braces"
                 size: 34
@@ -314,18 +281,6 @@ Item {
             editing: root.editing
             active: root.active
             slot: content.slots.sysrings
-            onDragStarted: key => root.dragKey = key
-            onDragMoved: (key, bx, by) => root.moveDrag(key, bx, by)
-            onDragDropped: (key, bx, by) => root.endDrag(key, bx, by)
-            onDeleteClicked: key => root.removeWidget(key)
-        }
-        HomeWidget {
-            key: "weather"
-            source: root.widgets.weather.file
-            delay: root.widgets.weather.delay
-            editing: root.editing
-            active: root.active
-            slot: content.slots.weather
             onDragStarted: key => root.dragKey = key
             onDragMoved: (key, bx, by) => root.moveDrag(key, bx, by)
             onDragDropped: (key, bx, by) => root.endDrag(key, bx, by)

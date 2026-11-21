@@ -29,7 +29,6 @@ Item {
         sliders: { file: "SlidersCard.qml", fixed: 162, delay: 120, icon: "tune_variant", label: "Sliders" },
         media: { file: "MediaCard.qml", fixed: false, delay: 90, min: 210, icon: "music", label: "Player" },
         screentime: { file: "ScreenTimeCard.qml", fixed: false, delay: 150, icon: "timer_outline", label: "Screen time" },
-        weather: { file: "WeatherCard.qml", fixed: false, delay: 120, icon: "weather_sunny", label: "Weather" },
         ministats: { file: "MiniStatsCard.qml", fixed: 92, delay: 210, icon: "chart_areaspline", label: "Stats" },
         calendar: { file: "CalendarCard.qml", fixed: 280, delay: 180, icon: "calendar_today", label: "Calendar" },
         battery: { file: "BatteryCard.qml", fixed: 120, delay: 0, icon: "battery", label: "Battery" },
@@ -38,11 +37,11 @@ Item {
         workspaces: { file: "WorkspacesCard.qml", fixed: 84, delay: 0, icon: "apps", label: "Workspaces" },
         notes: { file: "NotesCard.qml", fixed: false, delay: 0, min: 180, icon: "notebook", label: "Notes" }
     })
-    readonly property var allKeys: ["toggles", "sliders", "media", "screentime", "weather", "ministats", "calendar", "battery", "timers", "notifs", "workspaces", "notes"]
+    readonly property var allKeys: ["toggles", "sliders", "media", "screentime", "ministats", "calendar", "battery", "timers", "notifs", "workspaces", "notes"]
 
     readonly property int gap: 14
     readonly property var colBase: [372, 400, 330]
-    readonly property var defaultCols: [["toggles", "sliders"], ["media", "screentime"], ["weather", "ministats"]]
+    readonly property var defaultCols: [["toggles", "sliders"], ["media", "screentime"], ["ministats"]]
 
     // columns from the config, sanitized: unknown keys dropped, duplicates
     // removed. Keys missing from all columns are hidden (removable in edit
@@ -248,17 +247,7 @@ Item {
             shown: root.active
             clip: true
 
-            ClippingRectangle {
-                anchors.fill: parent
-                radius: parent.radius
-                color: "transparent"
-                Aurora {
-                    anchors.fill: parent
-                    intensity: 1
-                    speed: 1
-                    bg: Theme.surfaceLowest
-                }
-            }
+            // lith: aurora shader removed; the dashboard's background image shows through
 
             RowLayout {
                 anchors.fill: parent
@@ -279,18 +268,21 @@ Item {
                         font.pixelSize: 28
                         font.weight: Font.Black
                         font.family: Theme.display
-                        color: Theme.fgAurora
+                        color: "#eef0f6" // fixed: hero always sits on the dark dashboard image
+                        style: Text.Raised
+                        styleColor: Qt.rgba(0, 0, 0, 0.55)
                     }
                     Txt {
                         text: Qt.formatDate(clock.date, "dddd, d MMMM") + "  ·  up " + Utils.human(SysStats.uptime)
                         font.pixelSize: 13
-                        color: Theme.alpha(Theme.fgAurora, 0.85)
+                        color: Qt.rgba(0.93, 0.94, 0.96, 0.9)
+                        style: Text.Raised
+                        styleColor: Qt.rgba(0, 0, 0, 0.55)
                     }
                     RowLayout {
                         spacing: 8
                         Repeater {
                             model: [
-                                { icon: "pac_man", text: Updates.count + (Updates.count === 1 ? " update" : " updates"), c: 2 },
                                 { icon: Power.icon, text: Power.percent + "%", c: 3 },
                                 { icon: Net.icon, text: Net.name, c: 5 },
                                 { icon: Power.profileIcon, text: Power.profileName, c: 1 },
@@ -331,25 +323,14 @@ Item {
                     Txt {
                         Layout.alignment: Qt.AlignRight
                         text: Qt.formatTime(clock.date, "HH:mm")
-                        font.pixelSize: 64
-                        font.weight: Font.Thin
+                        // was Font.Thin 64: hairline strokes vanished into the aurora
+                        font.pixelSize: 58
+                        font.weight: Font.Black
                         font.family: Theme.display
-                        color: Theme.fgAurora
-                    }
-                    RowLayout {
-                        Layout.alignment: Qt.AlignRight
-                        visible: Weather.ready
-                        spacing: 6
-                        Icon {
-                            icon: Weather.icon
-                            size: 18
-                            color: Weather.tint
-                        }
-                        Txt {
-                            text: Weather.tempText + "  " + Weather.desc
-                            font.pixelSize: 13
-                            color: Theme.alpha(Theme.fg, 0.85)
-                        }
+                        color: "#eef0f6"
+                        // 1px dark drop edge keeps it legible over bright parts of the background
+                        style: Text.Raised
+                        styleColor: Qt.rgba(0, 0, 0, 0.55)
                     }
                 }
             }
@@ -433,18 +414,6 @@ Item {
                 editing: root.editing
                 active: root.active
                 slot: body.slots.screentime
-                onDragStarted: key => root.dragKey = key
-                onDragMoved: (key, bx, by) => root.moveDrag(key, bx, by)
-                onDragDropped: (key, bx, by) => root.endDrag(key, bx, by)
-                onDeleteClicked: key => root.removeWidget(key)
-            }
-            HomeWidget {
-                key: "weather"
-                source: root.widgets.weather.file
-                delay: root.widgets.weather.delay
-                editing: root.editing
-                active: root.active
-                slot: body.slots.weather
                 onDragStarted: key => root.dragKey = key
                 onDragMoved: (key, bx, by) => root.moveDrag(key, bx, by)
                 onDragDropped: (key, bx, by) => root.endDrag(key, bx, by)

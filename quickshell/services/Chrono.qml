@@ -580,7 +580,8 @@ Singleton {
     }
     Process {
         id: tonesProc
-        command: ["sh", "-c", "find /usr/share/sounds -type f \\( -name '*.oga' -o -name '*.ogg' -o -name '*.wav' \\) 2>/dev/null | grep -Ev 'audio-channel|audio-test|audio-volume|camera|device-|power-|service-|suspend|trash|screen-capture' | sort | head -n 40"]
+        // NixOS: no /usr/share; scan every XDG data dir, -L because profile dirs are symlinks into the store
+        command: ["sh", "-c", "IFS=:; for d in ${XDG_DATA_DIRS:-/usr/share}; do find -L \"$d/sounds\" -type f \\( -name '*.oga' -o -name '*.ogg' -o -name '*.wav' \\) 2>/dev/null; done | grep -Ev 'audio-channel|audio-test|audio-volume|camera|device-|power-|service-|suspend|trash|screen-capture' | sort | awk -F/ '!s[$NF]++' | head -n 40"]
         stdout: StdioCollector {
             onStreamFinished: root.systemTones = text.split("\n").filter(s => s !== "")
         }

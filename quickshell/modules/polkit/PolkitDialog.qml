@@ -17,6 +17,9 @@ Scope {
     }
 
     readonly property var flow: agent.flow
+    // a typed-then-cancelled password must never pre-fill the next (possibly
+    // different) request; every request is a new flow object
+    onFlowChanged: pw.text = ""
 
     Overlay {
         id: win
