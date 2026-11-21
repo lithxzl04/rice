@@ -1,151 +1,133 @@
-# rice
+# rice — lith's fork
 
-🇺🇸 [English](#english) · 🇷🇺 [Русский](#русский)
+A Hyprland desktop built on [Quickshell](https://quickshell.org): bar, dashboard, launcher,
+notifications, lock screen and colours that follow the wallpaper.
+This is lith's branch of [ForeverAlkash/rice](https://github.com/ForeverAlkash/rice),
+which is a fork of [Prism](https://github.com/Jack02134x/prism-shell).
 
----
+Tested on **NixOS with Hyprland 0.57.1 and Quickshell 0.3.2**, on a 1366×768 laptop.
 
-## English
+## Screenshots
 
-My personal Hyprland setup. This is a **fork of [Prism](https://github.com/Jack02134x/prism-shell)** — I take its base (the quickshell shell + wallpaper-driven theming) and bend it my own way.
+![bar](screenshots/bar.png)
 
-### Screenshots
+| | |
+|---|---|
+| ![desktop](screenshots/desktop.png) | ![dashboard](screenshots/dashboard.png) |
+| *Desktop* | *Dashboard: sliders, toggles, player, stats, notes* |
+| ![launcher](screenshots/launcher.png) | ![lock](screenshots/lock.png) |
+| *Launcher (ALT + D)* | *Lock screen* |
 
-|                                                       |                                                    |
-| ----------------------------------------------------- | -------------------------------------------------- |
-| ![dashboard](screenshots/dashboard.png)               | ![wallpapers](screenshots/wallpapers.png)          |
-| *Dashboard: player, weather, screen time, toggles*    | *Wallpaper picker — the whole system is tinted by them* |
-| ![spotify](screenshots/spotify.png)                   | ![lock](screenshots/lock.png)                      |
-| *The bar over fullscreen apps*                        | *Lock screen + avatar*                             |
-| ![home-edit](screenshots/home-edit.png)               | ![clock](screenshots/clock.png)                    |
-| *Home tab edit mode: drag, ✕ removes, tray adds back* | *Clock panel: timer and stopwatch side by side*    |
+![notifications](screenshots/notifications.png)
 
-### What I built myself
+*Bell panel: calendar and notifications*
 
-The base is Prism, but inside I added:
+## What's different from upstream
 
-- **AI in the launcher** — `q <question>` goes to a local Ollama, works without any cloud
-- **Update counter** — pacman updates are visible right in the drawer and on the dashboard
-- **Audio output switcher** — headphones/speakers/monitor in a couple of clicks, with jack filtering
-- **Notes** — a floating kitty window with a markdown file, on a hotkey
-- **Warm screen** — hyprsunset with remembered state
+- **ALT** is the main mod key, not SUPER.
+- **Removed:** weather (it was hardcoded to one city), the pacman update counter,
+  the Ollama AI launcher, easyeffects, the NVIDIA GPU card, 4-finger back/forward swipes
+  (the 3-finger workspace swipe is kept).
+- **Bar:** 5 workspaces, one clock, and no overlap on small screens.
+- **Dashboard:** its own background image, see-through cards, a readable clock.
+- **Fixes:** the mute OSD showed the opposite state, `qs ipc call dashboard tab` opened the
+  wrong tab, the hot corner did nothing, cancelled recordings said "Recording saved", and a
+  cancelled polkit password was kept for the next request.
 
-I also **removed** what I don't use: study noise, GLava, the KDE Connect phone integration, the dashboard's Media tab.
+Full diff against upstream: `git diff upstream/main...lith`
 
-A preview of what I tuned recently (screenshots above):
+## Requirements
 
-- **The Home tab is built with the mouse** — the corner stripe button toggles edit mode: drag widgets between the three columns, ✕ removes one, the "Add:" tray brings it back (calendar, battery, timers, workspaces, notes, notifications). The layout lives in config.json, empty columns keep their place. The player/sliders/stats have fixed sizes, the rest stretches.
-- **The left drawer is customizable the same way** — the same diagonal corner button: drag to reorder, ✕, tray.
-- **The clock is a panel, not a window** — clicking the Timers card slides a panel out from under the bar: timer and stopwatch side by side, settings. Timer/alarm rings go through the island's notifications (Stop / +1 min right on the peek), the sound dies on its own after 15 s.
-- **The player stretches by height** — the card fills what's left of its column (the cover grows with it); the drawer does the same vertically.
+- **Hyprland 0.55 or newer** (the config is written in Lua)
+- **Quickshell 0.3**
+- matugen, awww, cliphist, wl-clipboard, grim, slurp, wf-recorder, hyprpicker, hyprsunset,
+  hyprlock, playerctl, brightnessctl, pactl, jq, imagemagick, ffmpegthumbnailer, python3,
+  qt6ct, kitty, nautilus
+- Fonts: Roboto, Adwaita Sans, Symbols Nerd Font, JetBrainsMono Nerd Font
 
-I turned the theme monochrome — one primary colour instead of a rainbow of accents, the launcher and lock screen reworked. Small config bits: a fixed cliphist, Throne and Telegram on their own workspaces. My own configs on top — `hypr/hyprland.lua`, touchpad swipes as back/forward, qt6ct/GTK themes.
+## Install
 
-I don't keep a line-by-line diff from vanilla — just compare with [upstream](https://github.com/Jack02134x/prism-shell), there aren't that many divergences.
+Your current configs are backed up before anything is replaced, but make your own backup too.
 
-### Layout
+### Arch
 
-```
-hypr/        — hyprland.lua (Lua config) + scripts
-quickshell/  — the shell itself (a Prism fork) + my edits
-matugen/     — templates: wallpaper → kitty / GTK / QT / bar
-kitty/ gtk-3.0/ gtk-4.0/ qt6ct/  — app themes
-cava/ btop/ fastfetch/ easyeffects/ — small stuff
-screenshots/ — screenshots for this README
-install.sh   — one-command install
-```
-
-### Install
-
-Clean Arch, no DE:
-
-```bash
-git clone https://github.com/ForeverAlkash/rice.git ~/rice
-cd ~/rice && ./install.sh
+```sh
+git clone -b lith https://github.com/lithxzl04/rice.git rice && cd rice && ./install.sh
 ```
 
-The script:
+The script installs the packages with pacman, copies the configs into `~/.config`, points
+matugen at your home, creates `config.json` from `config.example.json`, adds the PAM file for
+the lock screen, and downloads wallpapers into `~/Pictures/Wallpapers` if that folder is empty.
 
-1. installs the packages (Hyprland, quickshell, matugen, PipeWire, NM, kitty, hyprsunset, fonts, etc.) in one pacman transaction
-2. lays the configs into `~/.config` (backs up existing ones), seeds config.json and the lock screen's pam file
-3. pulls the wallpapers from upstream (they're heavy, I don't keep them in the repo)
-4. sets up ydotool and the `input` group for swipe gestures
+### NixOS (tested)
 
-Login: `exec Hyprland` in `~/.zprofile`. Keybind cheat sheet — `SUPER + /`.
+Install the packages above, then link the config folders from your clone instead of copying
+them. Quickshell writes its own state into its folder, so the link must point to a writable
+path, not into the Nix store:
 
-### Credits
+```nix
+# inside home-manager.users.<you>
+xdg.configFile = lib.genAttrs [ "quickshell" "matugen" "kitty" "cava" "btop" "fastfetch" "qt6ct" ]
+  (d: { source = config.lib.file.mkOutOfStoreSymlink "/home/<you>/dotfiles/rice/${d}"; });
 
-All the base is [Jack02134x](https://github.com/Jack02134x) and his [Prism](https://github.com/Jack02134x/prism-shell). Thanks for the work done, I just tuned it my way.
-
----
-
-## Русский
-
-Мой личный сетап Hyprland. Это **форк [Prism](https://github.com/Jack02134x/prism-shell)** — беру оттуда основу (quickshell-шелл + крашение темы от обоев), дальше всё докручено под себя.
-
-### Скрины
-
-|                                                          |                                             |
-| -------------------------------------------------------- | ------------------------------------------- |
-| ![dashboard](screenshots/dashboard.png)                  | ![wallpapers](screenshots/wallpapers.png)   |
-| *Дашборд: плеер, погода, скринтайм, тумблеры*            | *Пикер обоев — от них красится вся система* |
-| ![spotify](screenshots/spotify.png)                      | ![lock](screenshots/lock.png)               |
-| *Бар поверх приложений*                                  | *Локскрин + аватар*                         |
-| ![home-edit](screenshots/home-edit.png)                  | ![clock](screenshots/clock.png)             |
-| *Edit mode Home-таба: тащи, ✕ — убрать, трей — добавить* | *Часы-панель: таймер и секундомер рядом*    |
-
-### Что тут самодельное
-
-Основа — Prism, но внутрь я добавил:
-
-- **AI в лаунчере** — `q <вопрос>` уходит в локальную Ollama, работает без облака
-- **Счётчик обновлений** — pacman-обновления видны прямо в шторке и на дашборде
-- **Переключатель аудиовыхода** — наушники/спикеры/монитор в пару кликов, с фильтрацией джеков
-- **Заметки** — плавающее окошко kitty с markdown-файлом, по хоткею
-- **Тёплый экран** — hyprsunset с запоминанием состояния
-
-А ещё **вырезал** то, чем не пользуюсь:  study noise, GLava, интеграцию с телефоном через KDE Connect, вкладку Media в дашборде.
-
-Предпросмотр того, что докрутил недавно (скрины выше):
-
-- **Home-таб собирается мышкой** — кнопка-полоска в углу включает edit mode: тащишь виджеты между тремя колонками, ✕ убирает, трей «Add:» возвращает (календарь, батарея, таймеры, воркспейсы, заметки, уведомления). Раскладка живёт в config.json, пустые колонки остаются на месте. Фиксированные размеры у плеера/слайдеров/статики, гибкие тянутся.
-- **Левая шторка настраивается так же** — та же диагональная кнопка в углу: порядок виджетов перетаскиванием, ✕, трей.
-- **Часы — панель вместо окна** — клик по карточке Timers выдвигает панель из-под бара: таймер и секундомер рядом, настройки. Звонок таймера/будильника идёт через уведомления острова (Stop / +1 min прямо на пике), звук сам глохнет через 15 с.
-- **Плеер тянется по высоте** — карточка заполняет остаток колонки (обложка растёт вместе с ней), в шторке — аналогично автозаполнение по вертикали.
-
-Тему перевёл в монохром — вместо радуги акцентов один primary-цвет, лаунчер и локскрин переработаны. Мелочи в конфигах: пофикшенный cliphist, Throne и Telegram на своих воркспейсах. Свои конфиги поверх — `hypr/hyprland.lua`, свайпы тачпада как back/forward, qt6ct/GTK-темы.
-
-Подробный построчный diff от ванили я не веду — просто сравни с [upstream](https://github.com/Jack02134x/prism-shell), расхождений не так много.
-
-### Структура
-
-```
-hypr/        — hyprland.lua (Lua-конфиг) + скрипты
-quickshell/  — сам шелл (форк Prism) + мои правки
-matugen/     — шаблоны: обои → kitty / GTK / QT / бар
-kitty/ gtk-3.0/ gtk-4.0/ qt6ct/  — темы приложений
-cava/ btop/ fastfetch/ easyeffects/ — мелочи
-screenshots/ — скрины для этого README
-install.sh   — установка одной командой
+# system level
+security.pam.services.hyprlock-password = { };
+qt = { enable = true; platformTheme = "qt5ct"; };   # puts qt6ct and Qt plugins on the plugin path
+environment.pathsToLink = [ "/share/color-schemes" ];
 ```
 
-### Установка
+### Other distros (untested)
 
-Чистый Arch, без DE:
-
-```bash
-git clone https://github.com/ForeverAlkash/rice.git ~/rice
-cd ~/rice && ./install.sh
+```sh
+for d in quickshell matugen kitty cava btop fastfetch qt6ct gtk-3.0 gtk-4.0; do cp -r $d ~/.config/; done
+cp hypr/hyprland.lua ~/.config/hypr/
+cp quickshell/config.example.json ~/.config/quickshell/config.json
+sed -i "s|/home/[^/]*/\.config|$HOME/.config|g" ~/.config/matugen/config.toml
+sed -i 's|/run/current-system/sw/share/|/usr/share/|' ~/.config/qt6ct/qt6ct.conf
+printf 'auth required pam_unix.so\naccount required pam_unix.so\n' | sudo tee /etc/pam.d/hyprlock-password
 ```
 
-Скрипт:
+On Debian, Hyprland 0.55+ and Quickshell are only in trixie-backports, forky and sid,
+and matugen and awww are not packaged, so install those two from their upstream projects.
 
-1. ставит пакеты (Hyprland, quickshell, matugen, PipeWire, NM, kitty, hyprsunset, шрифты и т.д.) одним pacman-ом
-2. раскладывает конфиги в `~/.config` (старые бэкапит), сеет config.json и pam для локскрина
-3. докачивает обои из upstream (они тяжёлые, в репо не тяну)
-4. настраивает ydotool и группу `input` для жестов
+Then log in to Hyprland again. The shell starts at login, not on a config reload.
 
-Логин: `exec Hyprland` в `~/.zprofile`. Шпаргалка по клавишам — `SUPER + /`.
+## Keybinds
 
-### Благодарности
+The main key is **ALT**. Press **ALT + /** to see every bind.
 
-Вся база — [Jack02134x](https://github.com/Jack02134x) и его [Prism](https://github.com/Jack02134x/prism-shell). Спасибо за проделанную работу, я лишь докрутил под себя.
+| Keys | Action |
+|---|---|
+| ALT + Return | Terminal |
+| ALT + D | Launcher (`>` clipboard, `:` emoji, `$` shell, `=` calc, `?` help) |
+| ALT + Esc | Dashboard |
+| ALT + N | Calendar and notifications |
+| ALT + W | Wallpaper picker |
+| ALT + C | Clipboard history |
+| ALT + L | Lock |
+| ALT + M | Power menu |
+| Print | Screenshot menu |
+| ALT + R | Start / stop recording |
+| ALT + 1…5 | Workspaces |
+
+## Configuration
+
+- `~/.config/quickshell/config.json` holds the shell settings (copied from
+  `config.example.json`). Change `apps` if you don't use kitty, nautilus and librewolf.
+- Wallpapers are read from `~/Pictures/Wallpapers`; set `wallpaper.dir` to use another folder.
+- The dashboard background is loaded from `~/Pictures/wallpapers/ferris-wheel.jpg`.
+  Put any image there; without one the dashboard has a plain dark background.
+- `kitty.conf` includes `~/.config/kitty-colors.conf`, which matugen writes the first time
+  you pick a wallpaper.
+
+## Known issues
+
+- Without a `hypr-screentime` tracker, the shell logs a warning every 15 seconds.
+- The `a ` launcher prefix needs `ani-cli`.
+
+## Credits and license
+
+Everything here is built on [Prism](https://github.com/Jack02134x/prism-shell) by
+[Jack02134x](https://github.com/Jack02134x), and on
+[ForeverAlkash/rice](https://github.com/ForeverAlkash/rice). Upstream has no license file,
+so ask the authors before reusing their code outside a GitHub fork.

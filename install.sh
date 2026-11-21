@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# rice installer: bare Arch -> Hyprland + Prism (quickshell) + all configs from this repo.
+# rice installer (Arch only): Hyprland + Prism (Quickshell) + the configs in this repo.
 #
-#   git clone https://github.com/<you>/<rice>.git rice && cd rice && ./install.sh
+#   git clone -b lith https://github.com/lithxzl04/rice.git rice && cd rice && ./install.sh
 #
 # What it does:
 #   1. checks: Arch, not root
 #   2. one pacman transaction: Hyprland, Quickshell, matugen, PipeWire, NetworkManager,
-#      kitty, thunar, fonts, icons, easyeffects, cava, btop, fastfetch, mpv, gestures
-#   3. copies the configs from this repo into ~/.config (existing files backed up),
-#      seeds config.json and the pam config for the lock screen
-#   4. wallpapers (~/.config/quickshell/wallpapers) from upstream prism-shell if missing
-#   5. ydotool daemon + input group for touchpad swipe gestures
+#      kitty, nautilus, fonts, icons, cava, btop, fastfetch, mpv
+#   3. copies the configs from this repo into ~/.config (existing ones are backed up),
+#      points matugen at your home, seeds config.json from config.example.json,
+#      and adds the pam config for the lock screen
+#   4. downloads wallpapers from upstream prism-shell into ~/Pictures/Wallpapers if it is empty
 #
-# run without sudo; it asks for the password itself.
+# Run it without sudo; it asks for your password when it needs it.
+# Other distros: install the packages yourself and do steps 3-4 by hand (see README).
 
 set -euo pipefail
 
@@ -20,80 +21,71 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CFG="${XDG_CONFIG_HOME:-$HOME/.config}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 
-C_G='\033[32m' C_Y='\033[33m' C_R='\033[31m' C_D='\033[90m' C_0='\033[0m'
+C_G='\033[32m' C_Y='\033[33m' C_R='\033[31m' C_0='\033[0m'
 ok()   { printf "${C_G} ✔${C_0} %s\n" "$*"; }
 warn() { printf "${C_Y} !${C_0} %s\n" "$*"; }
 die()  { printf "${C_R} ✘${C_0} %s\n" "$*"; exit 1; }
 
-(( EUID )) || die "не запускай от root"
-grep -qi '^ID=arch' /etc/os-release || die "это не Arch"
+(( EUID )) || die "do not run this as root"
+grep -qi '^ID=arch' /etc/os-release || die "this installer is for Arch only; see README for other distros"
 
 # ---------------------------------------------------------------- packages --
 PKGS=(
     # desktop
-    hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk hyprpolkitagent polkit
-    qt5-wayland qt6-wayland xdg-user-dirs xdg-utils
+    hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk polkit
+    qt6-wayland xdg-user-dirs xdg-utils
     pipewire wireplumber pipewire-alsa pipewire-pulse
     networkmanager bluez bluez-utils upower
-    kitty thunar gvfs tumbler pavucontrol unzip
+    kitty nautilus gvfs pavucontrol unzip
     # shell (Prism)
     quickshell qt6-svg qt6-imageformats
     matugen awww cava
-    wl-clipboard cliphist grim slurp wf-recorder hyprpicker
+    wl-clipboard cliphist grim slurp wf-recorder hyprpicker jq
     brightnessctl playerctl imagemagick ffmpeg ffmpegthumbnailer
     hyprlock hyprsunset libnotify curl git python
     # looks
     ttf-nerd-fonts-symbols ttf-jetbrains-mono-nerd ttf-roboto adwaita-fonts
     noto-fonts noto-fonts-emoji noto-fonts-cjk
     breeze-icons papirus-icon-theme adw-gtk-theme
-    # mine
-    qt6ct easyeffects btop fastfetch mpv
-    libinput-gestures ydotool
+    # extras
+    qt6ct btop fastfetch mpv
 )
 missing=()
 for p in "${PKGS[@]}"; do pacman -Q "$p" &>/dev/null || missing+=("$p"); done
 if ((${#missing[@]})); then
-    echo "ставлю: ${missing[*]}"
+    echo "installing: ${missing[*]}"
     sudo pacman -S --needed --noconfirm "${missing[@]}"
 else
-    ok "все пакеты уже стоят"
+    ok "all packages are already installed"
 fi
 
 # ---------------------------------------------------------------- configs ---
-# copy each tracked dir/file into ~/.config, backing up what's already there
+# copy each dir/file into ~/.config, backing up what is already there
 copy() { # $1 = relative path in repo
     local src="$HERE/$1" dst="$CFG/$1"
-    [[ -e $src ]] || { warn "нет $1 в репо, пропускаю"; return; }
+    [[ -e $src ]] || { warn "$1 is not in the repo, skipping"; return; }
     if [[ -e $dst && ! -L $dst ]]; then
         mv "$dst" "$dst.bak-$STAMP"
-        warn "бэкап: $1 -> $1.bak-$STAMP"
+        warn "backup: $1 -> $1.bak-$STAMP"
     fi
     mkdir -p "$(dirname "$dst")"
     cp -r "$src" "$dst"
     ok "$1"
 }
-for d in hypr quickshell matugen kitty gtk-3.0 gtk-4.0 qt6ct cava btop fastfetch easyeffects; do copy "$d"; done
-for f in libinput-gestures.conf kdeglobals dolphinrc mimeapps.list user-dirs.dirs QtProject.conf; do copy "$f"; done
+for d in hypr quickshell matugen kitty gtk-3.0 gtk-4.0 qt6ct cava btop fastfetch; do copy "$d"; done
+copy kdeglobals
+
+# matugen needs absolute paths; the repo carries the author's home
+sed -i "s|/home/[^/]*/\.config|$CFG|g" "$CFG/matugen/config.toml"
+ok "matugen paths -> $CFG"
 
 # ------------------------------------------------------------- config.json --
-# config.json is gitignored, so a fresh clone ships without it. Seed one so
-# the wallpaper picker points at the wallpapers this repo carries and the
-# lock screen avatar matches.
+# config.json is gitignored, so a fresh clone ships without it
 if [[ ! -f $CFG/quickshell/config.json ]]; then
-    python3 - "$CFG" <<'PY'
-import json, sys, pathlib
-cfg = pathlib.Path(sys.argv[1]) / "quickshell"
-data = {
-    "apps": {"browser": "firefox", "editor": "code", "files": "thunar", "terminal": "kitty"},
-    "user": {"avatar": str(cfg / "MyAvatar" / "lilith.jpeg")},
-    "wallpaper": {"copyTo": str(cfg / ".state" / "wallpaper"),
-                  "dir": str(cfg / "wallpapers")}
-}
-cfg.mkdir(parents=True, exist_ok=True)
-(cfg / "config.json").write_text(json.dumps(data, indent=4))
-PY
-    ok "config.json (seed)"
+    cp "$HERE/quickshell/config.example.json" "$CFG/quickshell/config.json"
+    ok "config.json (from config.example.json)"
 fi
+command -v librewolf >/dev/null || warn "config.json uses librewolf as the browser; change apps.browser if you use another"
 
 # -------------------------------------------------------------------- pam ----
 # the lock screen's password path uses its own pam config; the hyprlock
@@ -107,35 +99,22 @@ PAM
     ok "pam: /etc/pam.d/hyprlock-password"
 fi
 
-# ------------------------------------------------------------- power button --
-# the shell binds XF86PowerOff to the power menu; logind must leave the key
-# alone for that to work (a long press is still a hardware force-off)
-sudo mkdir -p /etc/systemd/logind.conf.d
-printf '[Login]\n# rice: the power button opens the shell power menu (bound in hyprland.lua)\nHandlePowerKey=ignore\n' \
-    | sudo tee /etc/systemd/logind.conf.d/rice-power.conf >/dev/null
-systemctl kill -s HUP systemd-logind 2>/dev/null || true
-ok "power button: logind ignores it, the shell opens the power menu"
-
 # ---------------------------------------------------------------- wallpaper --
-if [[ ! -d $CFG/quickshell/wallpapers || -z $(ls -A "$CFG/quickshell/wallpapers" 2>/dev/null) ]]; then
-    echo "тяну обои из prism-shell…"
+# the shell reads ~/Pictures/Wallpapers unless config.json sets wallpaper.dir
+WALL="$HOME/Pictures/Wallpapers"
+if [[ -z $(ls -A "$WALL" 2>/dev/null) ]]; then
+    echo "downloading wallpapers from prism-shell…"
     tmp="$(mktemp -d)"
     git clone --depth 1 https://github.com/Jack02134x/prism-shell.git "$tmp/prism"
-    mkdir -p "$CFG/quickshell/wallpapers"
-    cp -r "$tmp/prism/wallpapers/." "$CFG/quickshell/wallpapers/" 2>/dev/null || true
+    mkdir -p "$WALL"
+    cp -r "$tmp/prism/wallpapers/." "$WALL/" 2>/dev/null || true
     rm -rf "$tmp"
-    ok "wallpapers"
+    ok "wallpapers -> $WALL"
 fi
-
-# ---------------------------------------------------------------- gestures --
-# touchpad swipe -> mouse4/5 (back/forward) через libinput-gestures + ydotool
-getent group input >/dev/null || sudo groupadd input
-sudo gpasswd -a "$USER" input 2>/dev/null || true
-sudo systemctl enable --now ydotool 2>/dev/null || true
-ok "gestures: юзер в input, ydotool запущен (перезайди для применения группы)"
 
 xdg-user-dirs-update >/dev/null 2>&1 || true
 
 echo
-ok "готово. логинься — Hyprland стартует с tty1:"
-echo   "    exec Hyprland   # в ~/.zprofile, если ещё нет"
+ok "done. Log in to Hyprland (the shell starts at login, not on a config reload)."
+echo   "    from a tty: add 'exec Hyprland' to ~/.zprofile if it is not there yet"
+echo   "    main key is ALT; ALT + / shows every keybind"
