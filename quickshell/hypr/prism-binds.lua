@@ -44,7 +44,7 @@ bind("SHIFT + Print",                  hl.dsp.exec_cmd("qs ipc call screenshot r
 bind("CTRL + Print",                   hl.dsp.exec_cmd("qs ipc call screenshot full"))
 bind(mainMod .. " + Print",            hl.dsp.exec_cmd("qs ipc call screenshot window"))
 bind(mainMod .. " + R",                hl.dsp.exec_cmd("qs ipc call record toggle"))
-bind(mainMod .. " + SHIFT + R",        hl.dsp.exec_cmd("qs ipc call record menu"))
+bind(mainMod .. " + SHIFT + R",        hl.dsp.exec_cmd("qs ipc call record quick"))
 
 ---- TOGGLES ----
 bind(mainMod .. " + SHIFT + N",        hl.dsp.exec_cmd("qs ipc call toggle dnd"))

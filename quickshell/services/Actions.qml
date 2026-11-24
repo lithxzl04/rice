@@ -28,7 +28,7 @@ Singleton {
         { name: "Wallpapers", desc: "Pick a wallpaper (recolours everything)", icon: "palette", kw: "wallpaper background theme matugen", run: () => Panels.openWallpapers("") },
         { name: "Random Wallpaper", desc: "Surprise me", icon: "dice_multiple", kw: "wallpaper shuffle", run: () => Wallpapers.random() },
         { name: "Screenshot", desc: "Region, window or screen", icon: "monitor_screenshot", kw: "capture grim print", run: () => Panels.show("screenshot") },
-        { name: "Record Screen", desc: "Toggle region recording (wf-recorder)", icon: "record_rec", kw: "video capture", run: () => Toggles.toggleRecording() },
+        { name: "Record Screen", desc: "Toggle region recording (gpu-screen-recorder)", icon: "record_rec", kw: "video capture", run: () => Toggles.toggleRecording() },
         { name: "Color Picker", desc: "Pick a colour and copy its hex", icon: "eyedropper", kw: "hyprpicker colour", run: () => Shot.pickColor() },
         { name: "Clipboard History", desc: "Search cliphist", icon: "clipboard_text_outline", kw: "paste copy", run: () => Panels.openLauncher(">") },
         { name: "Emoji Picker", desc: "Search and copy emoji", icon: "emoticon_happy_outline", kw: "emoji smiley", run: () => Panels.openLauncher(":") },

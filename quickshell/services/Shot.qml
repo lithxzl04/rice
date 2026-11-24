@@ -34,7 +34,8 @@ Singleton {
         lastMode = mode
 
         const mon = Hypr.focusedWorkspace?.monitor?.name ?? ""
-        const delay_str = String(0.8 + (delay ?? 0))
+        // base wait covers the menu fade-out (320 ms); region mode is safe sooner, the user is still dragging when it ends
+        const delay_str = String((mode === "region" ? 0.1 : 0.4) + (delay ?? 0))
 
         let script = `sleep ${delay_str}; `
 

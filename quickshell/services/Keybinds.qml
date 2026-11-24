@@ -51,6 +51,7 @@ Singleton {
         [/qs ipc call screenshot full/, "Prism · screenshot the screen"],
         [/qs ipc call screenshot/, "Prism · screenshot menu"],
         [/qs ipc call record stop/, "Prism · stop recording"],
+        [/qs ipc call record quick/, "Prism · quick record (full screen, press again to stop)"],
         [/qs ipc call record/, "Prism · screen recording"],
         [/qs ipc call lock/, "Prism · lock screen"],
         [/qs ipc call edit/, "Prism · quick edit folders"],

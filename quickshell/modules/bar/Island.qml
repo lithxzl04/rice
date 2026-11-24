@@ -49,7 +49,7 @@ Item {
         case "track":
             return 420;
         case "mediaFull":
-            return 540;
+            return 430;
         case "media":
             return 330;
         default:
@@ -65,7 +65,7 @@ Item {
         case "track":
             return 80;
         case "mediaFull":
-            return 176;
+            return 136;
         default:
             return barHeight;
         }
@@ -244,13 +244,13 @@ Item {
                 sourceComponent: Item {
                     RowLayout {
                         anchors.fill: parent
-                        anchors.margins: 16
-                        spacing: 16
+                        anchors.margins: 12
+                        spacing: 12
 
                         ClippingRectangle {
-                            Layout.preferredWidth: 140
-                            Layout.preferredHeight: 140
-                            radius: 18
+                            Layout.preferredWidth: 112
+                            Layout.preferredHeight: 112
+                            radius: 14
                             color: Theme.surfaceHigh
                             Image {
                                 anchors.fill: parent
@@ -264,7 +264,7 @@ Item {
                                 anchors.centerIn: parent
                                 visible: Media.art === ""
                                 icon: "music"
-                                size: 54
+                                size: 42
                                 color: Theme.primary
                             }
                         }
@@ -272,13 +272,13 @@ Item {
                         ColumnLayout {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            spacing: 4
+                            spacing: 2
 
                             RowLayout {
                                 spacing: 6
                                 Icon {
                                     icon: Media.sourceIcon
-                                    size: 13
+                                    size: 12
                                     color: Theme.accent(5)
                                 }
                                 Txt {
@@ -296,7 +296,7 @@ Item {
                             Marquee {
                                 Layout.fillWidth: true
                                 text: Media.title || "Nothing playing"
-                                pixelSize: 17
+                                pixelSize: 15
                                 weight: Font.Bold
                                 color: Theme.fg
                                 hoverOnly: true
@@ -306,7 +306,7 @@ Item {
                             Txt {
                                 Layout.fillWidth: true
                                 text: Media.artist
-                                font.pixelSize: 13
+                                font.pixelSize: 12
                                 color: Theme.accent(1)
                             }
                             Item { Layout.fillHeight: true }
@@ -328,19 +328,19 @@ Item {
                                 Item { Layout.fillWidth: true }
                                 IconBtn {
                                     icon: "skip_previous"
-                                    size: 32
+                                    size: 28
                                     onClicked: Media.previous()
                                 }
                                 IconBtn {
                                     icon: Media.playing ? "pause" : "play"
-                                    size: 40
+                                    size: 34
                                     active: true
                                     accent: Theme.accent(0)
                                     onClicked: Media.toggle()
                                 }
                                 IconBtn {
                                     icon: "skip_next"
-                                    size: 32
+                                    size: 28
                                     onClicked: Media.next()
                                 }
                                 Item { Layout.fillWidth: true }

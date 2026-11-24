@@ -54,7 +54,7 @@ ColumnLayout {
                 anchors.right: parent.right
                 text: Qt.formatTime(clock.date, "HH:mm")
                 font.pixelSize: 30
-                font.weight: Font.Thin
+                font.weight: Font.Black
                 font.family: Theme.display
             }
         }

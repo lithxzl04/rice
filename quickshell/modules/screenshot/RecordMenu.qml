@@ -7,7 +7,7 @@ import qs.common
 import qs.services
 import qs.widgets
 
-// Screen recording panel (wf-recorder). Keys: 1/2/3 region/window/screen,
+// Screen recording panel (gpu-screen-recorder). Keys: 1/2/3 region/window/screen,
 // A toggles audio, S stops, Esc closes.
 Overlay {
     id: win

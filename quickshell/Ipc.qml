@@ -176,6 +176,13 @@ Scope {
         function full(): void {
             Toggles.startRecording("full");
         }
+        // no menu: starts a full-screen recording, or stops the running one
+        function quick(): void {
+            if (Toggles.recording)
+                Toggles.stopRecording();
+            else
+                Toggles.startRecording("full");
+        }
         function stop(): void {
             Toggles.stopRecording();
         }

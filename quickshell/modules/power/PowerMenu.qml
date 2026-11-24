@@ -36,6 +36,11 @@ Overlay {
         { name: "Shut down", icon: "power", c: 9, confirm: true, run: () => Session.shutdown() }
     ]
 
+    // wallpaper-derived accents can be near-black; keep them readable on the dark button faces
+    function tone(c) {
+        return Theme.contrastFix(Theme.accent(c), Theme.surface, 7);
+    }
+
     function trigger(i) {
         const a = actions[i];
         selected = i;
@@ -146,7 +151,7 @@ Overlay {
                 font.pixelSize: 20
                 font.weight: Font.Black
                 font.family: Theme.display
-                color: win.armed >= 0 ? Theme.accent(win.actions[win.armed].c) : "white"
+                color: win.armed >= 0 ? win.tone(win.actions[win.armed].c) : "white"
             }
             Txt {
                 Layout.alignment: Qt.AlignHCenter
@@ -166,7 +171,7 @@ Overlay {
                 readonly property real r: 235 * Math.min(1, Math.max(0, win.progress * 1.4 - index * 0.06))
                 readonly property bool sel: win.selected === index
                 readonly property bool isArmed: win.armed === index
-                readonly property color accent: Theme.accent(modelData.c)
+                readonly property color accent: win.tone(modelData.c)
                 width: 104
                 height: 104
                 x: stage.width / 2 + Math.cos(angle * Math.PI / 180) * r - width / 2
@@ -225,7 +230,7 @@ Overlay {
                     text: btn.modelData.name
                     font.pixelSize: 13
                     font.weight: Font.Bold
-                    color: btn.sel ? btn.accent : Qt.rgba(1, 1, 1, 0.75)
+                    color: btn.accent
                 }
 
                 MouseArea {

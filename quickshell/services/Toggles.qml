@@ -118,17 +118,19 @@ Singleton {
         }
     }
 
-    // ---- screen recording (wf-recorder) ----
+    // ---- screen recording (gpu-screen-recorder) ----
     property bool recording: false
     property bool recordAudio: true
     property string recordFile: ""
     property real recordStart: 0
+    readonly property string recordPid: Config.cacheDir + "/record.pid"
     Process {
         id: rec
         onExited: code => {
             root.recording = false;
             Panels.capturing = false;
-            // non-zero = cancelled slurp (Esc) or wf-recorder failed: no file was written.
+            Quickshell.execDetached(["rm", "-f", root.recordPid]);
+            // non-zero = cancelled slurp (Esc) or gsr failed: no file was written.
             // A normal stop (SIGINT) exits 0.
             if (code === 0 && root.recordFile !== "")
                 Notifs.local("Recording saved", root.recordFile, "video", 1, "", [{ text: "Open folder", run: () => Quickshell.execDetached(["xdg-open", Config.paths.recordings]) }, { text: "Play", run: () => Quickshell.execDetached(["xdg-open", root.recordFile]) }]);
@@ -145,19 +147,17 @@ Singleton {
         Panels.closeAll();
         const ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
         recordFile = Config.paths.recordings + "/recording_" + ts + ".mp4";
-        const sinkName = Pipewire.defaultAudioSink?.name ?? "";
-        const audioDevice = sinkName !== "" ? sinkName + ".monitor" : "";
-        const audio = recordAudio && audioDevice !== "" ? " --audio=\"$3\"" : "";
-        let geo = "";
+        // gsr takes a monitor name, or a WxH+X+Y rectangle for region/window
+        let geo = "g=${2:-$(hyprctl monitors | awk '/^Monitor /{print $2; exit}')}; ";
         if (mode === "region")
-            geo = "g=$(slurp) || exit 1; ";
+            geo = "g=$(slurp -f '%wx%h+%x+%y' </dev/null) || exit 1; ";
         else if (mode === "window")
-            geo = "g=$(hyprctl activewindow -j | jq -r '\"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"'); ";
-        const mon = Hypr.focusedWorkspace?.monitor?.name ?? "";
-        const g = mode === "full" ? (mon !== "" ? " -o \"$2\"" : "") : " -g \"$g\"";
+            geo = "g=$(hyprctl activewindow -j | jq -r '\"\\(.size[0])x\\(.size[1])+\\(.at[0])+\\(.at[1])\"'); ";
+        const audio = recordAudio ? " -a default_output" : "";
         if (mode === "region")
             Panels.capturing = true;
-        rec.command = ["setsid", "-w", "sh", "-c", "mkdir -p \"$(dirname \"$1\")\"; sleep 0.4; " + geo + "touch \"$1.started\"; exec wf-recorder" + audio + g + " -f \"$1\"", "rec", recordFile, mon, audioDevice];
+        // $$ survives the exec, so the pid file names gsr itself (its name is too long for pkill -x)
+        rec.command = ["setsid", "-w", "sh", "-c", "mkdir -p \"$(dirname \"$1\")\"; sleep " + (mode === "region" ? "0.1" : "0.4") + "; " + geo + "touch \"$1.started\"; echo $$ > \"$3\"; exec gpu-screen-recorder -w \"$g\" -f 60 -q very_high -k h264 -c mp4" + audio + " -o \"$1\" >/dev/null", "rec", recordFile, mode === "full" ? Hypr.focusedWorkspace?.monitor?.name ?? "" : "", recordPid];
         rec.running = true;
         recording = true;
         recordStart = Date.now();
@@ -189,8 +189,8 @@ Singleton {
         }
     }
     function stopRecording() {
-        // wf-recorder runs under setsid, so signal it directly (SIGINT finalises the file)
-        Quickshell.execDetached(["pkill", "-INT", "-x", "wf-recorder"]);
+        // gsr runs under setsid, so signal it directly (SIGINT finalises the file)
+        Quickshell.execDetached(["sh", "-c", "kill -INT \"$(cat \"$1\")\"", "stop", recordPid]);
     }
     function toggleRecording() {
         if (recording)
